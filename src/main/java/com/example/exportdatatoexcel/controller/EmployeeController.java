@@ -8,8 +8,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
@@ -29,6 +31,7 @@ public class EmployeeController {
 	@Autowired
 	private  EmployeeRepository employeeRepository;
 	
+	 
 	@GetMapping("/export")
 	public ResponseEntity<?> exportEmployee() throws Exception{
 		
@@ -60,6 +63,28 @@ public class EmployeeController {
 		
 	}
 	
+	 private static final String DIRECTORY_PATH = "F:\\file\\";
+
+	 @DeleteMapping("/delete")
+	 public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
+	        try {
+	            File fileToDelete = new File(DIRECTORY_PATH + fileName);
+
+	            if (fileToDelete.exists() && fileToDelete.isFile()) {
+	                if (fileToDelete.delete()) {
+	                    return ResponseEntity.ok("File deleted successfully");
+	                } else {
+	                    return ResponseEntity.status(500).body("Failed to delete the file");
+	                }
+	            } else {
+	                return ResponseEntity.status(404).body("File not found");
+	            }
+	        } catch (Exception e) {
+	            return ResponseEntity.status(500).body("Internal Server Error");
+	        }
+	    }
+	    
+	    
 	public static Workbook exportToExcel(List<Employee> employees) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Employees");
